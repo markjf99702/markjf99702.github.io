@@ -103,9 +103,11 @@
     .slot h2 { font-size: 1.2rem; margin: .45rem 0 0; letter-spacing: -.01em; }
     .slot p { margin: 0; color: var(--muted); font-size: .95rem; }
     .go { margin-top: auto; padding-top: .6rem; font-weight: 700; color: var(--accent); font-size: .92rem; }
+    .slot.full h2 { margin: 0; }
+    .slot.full .go { margin: 0 0 0 auto; padding: 0 0 0 .5rem; white-space: nowrap; }
+    .slot .label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
     .soon { opacity: .8; }
-    .soon h2 { margin: 0; font-size: 1.05rem; }
-    .soon .label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+    .soon h2 { font-size: 1.05rem; }
     @media (prefers-reduced-motion: reduce) { .obj, .slot { transition: none; } a.slot:hover .obj { transform: none; } }
 
     @media (max-width: 820px) {
@@ -121,7 +123,10 @@
       .slot .obj { grid-row: span 3; font-size: 2.1rem; padding-top: .2rem; }
       .slot h2 { margin: 0; }
       .go { padding-top: .3rem; }
-      .slot.full { display: flex; }
+      .slot.full { align-items: start; row-gap: .35rem; }
+      .slot.full .obj { grid-row: span 2; }
+      .slot.full.soon { display: flex; }
+      .slot.full .go { margin: 0; padding: .3rem 0 0; grid-column: 2; }
     }
 
     footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 1rem 16px 2.2rem; }
@@ -165,6 +170,15 @@
         <span class="obj" aria-hidden="true">🏙️</span>
         <h2>Terraville</h2>
         <p>A city builder in the spirit of the 1989 original, with a terrain editor, challenges and disasters.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot full" href="/trick-deck/">
+        <span class="obj" aria-hidden="true">🦴</span>
+        <div>
+          <span class="label">New</span>
+          <h2>Trick Deck</h2>
+          <p>Teach your dog tricks five tries at a time: a clicker in your phone, step-by-step plans for 48 tricks, and a trick show that deals from the ones they know.</p>
+        </div>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <div class="slot full soon">
