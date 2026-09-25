@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>junkdrawer.works</title>
+  <meta name="description" content="The only junk drawer where everything works: small, useful things that run in your browser. Nothing to install, no accounts.">
+  <meta property="og:title" content="junkdrawer.works">
+  <meta property="og:description" content="The only junk drawer where everything works.">
+  <meta property="og:image" content="https://junkdrawer.works/og.png">
+  <meta property="og:url" content="https://junkdrawer.works/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f4ede1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1512" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #f4ede1;
+      --ink: #2b2118;
+      --muted: #6d5d4b;
+      --wood: #c3935c;
+      --wood-dark: #9c6d3c;
+      --grain: rgba(92, 56, 22, .10);
+      --slot: #fbf7ef;
+      --slot-hover: #fffdf8;
+      --accent: #8a4f1c;
+      --brass-1: #f3d08a;
+      --brass-2: #b7863c;
+      --shadow: rgba(60, 35, 10, .28);
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1512;
+        --ink: #f3e9da;
+        --muted: #b9a893;
+        --wood: #5f4531;
+        --wood-dark: #463223;
+        --grain: rgba(0, 0, 0, .18);
+        --slot: #2a221c;
+        --slot-hover: #322921;
+        --accent: #e6b872;
+        --brass-1: #e9c47c;
+        --brass-2: #93692c;
+        --shadow: rgba(0, 0, 0, .55);
+        color-scheme: dark;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { color: inherit; }
+    .wrap { width: 100%; max-width: 980px; margin: 0 auto; padding: 3.5rem 16px 2rem; flex: 1; }
+
+    header { text-align: center; margin-bottom: 1.6rem; }
+    .pull {
+      width: 118px; height: 20px; margin: 0 auto 1.4rem; border-radius: 10px;
+      background: linear-gradient(180deg, var(--brass-1), var(--brass-2));
+      box-shadow: 0 3px 0 rgba(0, 0, 0, .18), 0 8px 18px -6px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, .6);
+      position: relative;
+    }
+    .pull::before, .pull::after {
+      content: ""; position: absolute; top: 5px; width: 10px; height: 10px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, var(--brass-1), var(--brass-2));
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .15);
+    }
+    .pull::before { left: 7px; } .pull::after { right: 7px; }
+    h1 { font-size: clamp(2.3rem, 7vw, 3.6rem); letter-spacing: -.035em; line-height: 1.05; margin: 0; font-weight: 800; }
+    h1 span { color: var(--accent); }
+    .tag { font-size: clamp(1.1rem, 2.6vw, 1.35rem); margin: .55rem 0 0; font-weight: 600; }
+    .intro { max-width: 36rem; margin: 0 auto 2rem; text-align: center; color: var(--muted); }
+
+    /* The organizer tray: wood shows through as the dividers. */
+    .tray {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+      padding: 12px; border-radius: 20px;
+      background:
+        repeating-linear-gradient(94deg, transparent 0 22px, var(--grain) 22px 24px, transparent 24px 61px, var(--grain) 61px 62px),
+        linear-gradient(180deg, var(--wood), var(--wood-dark));
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 18px 40px -18px var(--shadow), 0 2px 0 var(--wood-dark);
+    }
+    .slot {
+      grid-column: span 2;
+      display: flex; flex-direction: column; gap: .35rem;
+      min-height: 190px; padding: 1.1rem 1.15rem 1rem;
+      background: var(--slot); border-radius: 11px; text-decoration: none;
+      box-shadow: inset 0 3px 8px var(--shadow), inset 0 -1px 0 rgba(255, 255, 255, .35);
+      transition: background .15s;
+    }
+    .slot.wide { grid-column: span 3; }
+    .slot.full { grid-column: 1 / -1; min-height: 0; flex-direction: row; align-items: center; gap: .9rem; }
+    a.slot:hover { background: var(--slot-hover); }
+    a.slot:hover .obj { transform: translateY(-3px) rotate(-4deg); }
+    a.slot:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    .obj { font-size: 2.5rem; line-height: 1; display: inline-block; transition: transform .2s; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .18)); }
+    .slot h2 { font-size: 1.2rem; margin: .45rem 0 0; letter-spacing: -.01em; }
+    .slot p { margin: 0; color: var(--muted); font-size: .95rem; }
+    .go { margin-top: auto; padding-top: .6rem; font-weight: 700; color: var(--accent); font-size: .92rem; }
+    .soon { opacity: .8; }
+    .soon h2 { margin: 0; font-size: 1.05rem; }
+    .soon .label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+    @media (prefers-reduced-motion: reduce) { .obj, .slot { transition: none; } a.slot:hover .obj { transform: none; } }
+
+    @media (max-width: 820px) {
+      .tray { grid-template-columns: 1fr 1fr; }
+      .slot, .slot.wide { grid-column: span 1; }
+      .slot.wide:first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 540px) {
+      .wrap { padding-top: 2.4rem; }
+      .tray { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
+      .slot, .slot.wide, .slot.wide:first-child { grid-column: 1; min-height: 0; }
+      .slot { display: grid; grid-template-columns: auto 1fr; column-gap: .9rem; align-items: start; }
+      .slot .obj { grid-row: span 3; font-size: 2.1rem; padding-top: .2rem; }
+      .slot h2 { margin: 0; }
+      .go { padding-top: .3rem; }
+      .slot.full { display: flex; }
+    }
+
+    footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 1rem 16px 2.2rem; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="pull" aria-hidden="true"></div>
+      <h1>junkdrawer<span>.works</span></h1>
+      <p class="tag">The only junk drawer where everything works.</p>
+    </header>
+    <p class="intro">No dead batteries, no mystery keys, no pens that won’t write. Just small things that each do one job well. They all run in your browser, with nothing to install and no accounts.</p>
+
+    <section class="tray" aria-label="What’s in the drawer">
+      <a class="slot wide" href="/good-day-for/">
+        <span class="obj" aria-hidden="true">🌤️</span>
+        <h2>Good Day For</h2>
+        <p>When the weather will let you stain the deck, paint the house, mow, seed the lawn or hang out the laundry.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot wide" href="/el-cantor/">
+        <span class="obj" aria-hidden="true">🎴</span>
+        <h2>El Cantor</h2>
+        <p>Lotería for the family table: a caller that reads the cards aloud, play-along tablas on every phone, and tablas to print.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/kerf/">
+        <span class="obj" aria-hidden="true">🪚</span>
+        <h2>Kerf</h2>
+        <p>List the parts for a woodworking project. Kerf finds the cheapest boards and sheets to buy and how to cut them.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/starhop/">
+        <span class="obj" aria-hidden="true">🔭</span>
+        <h2>Starhop</h2>
+        <p>What’s up tonight, what’s worth a look through a telescope, and how to find it by hopping from stars you know.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/terraville/">
+        <span class="obj" aria-hidden="true">🏙️</span>
+        <h2>Terraville</h2>
+        <p>A city builder in the spirit of the 1989 original, with a terrain editor, challenges and disasters.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <div class="slot full soon">
+        <span class="obj" aria-hidden="true">⚾</span>
+        <div>
+          <span class="label">Still being built</span>
+          <h2>Twenty-Eighty</h2>
+          <p>A baseball front-office sim where every player is graded on the scouts’ 20–80 scale.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>Tidied by someone who hates junk drawers.</footer>
+</body>
+</html>
