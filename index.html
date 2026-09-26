@@ -96,6 +96,13 @@
     }
     .slot.wide { grid-column: span 3; }
     .slot.full { grid-column: 1 / -1; min-height: 0; flex-direction: row; align-items: center; gap: .9rem; }
+    /* Rows of three, or two where three would leave a tile on its own. The tiles are the <a>s (the strips
+       at the end are <div>s), so the first one's place counting from the last says how many there are.
+       Two wide tiles plus 3n + 1 more: the last four go two to a row. Plus 3n + 2 more: the last two do. */
+    @media (min-width: 821px) {
+      .tray > a:first-of-type:nth-last-of-type(3n) ~ a:nth-last-of-type(-n + 4),
+      .tray > a:first-of-type:nth-last-of-type(3n + 1) ~ a:nth-last-of-type(-n + 2) { grid-column: span 3; }
+    }
     a.slot:hover { background: var(--slot-hover); }
     a.slot:hover .obj { transform: translateY(-3px) rotate(-4deg); }
     a.slot:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
@@ -116,6 +123,8 @@
       .tray { grid-template-columns: 1fr 1fr; }
       .slot, .slot.wide { grid-column: span 1; }
       .slot.wide:first-child { grid-column: 1 / -1; }
+      /* Two to a row here: with an even number of tiles, the second wide one gets a row to itself too, so the rest pair up. */
+      .tray > a:first-of-type:nth-last-of-type(2n) + a.wide { grid-column: 1 / -1; }
     }
     @media (max-width: 540px) {
       .wrap { padding-top: 2.4rem; }
