@@ -106,6 +106,8 @@
     .slot.full h2 { margin: 0; }
     .slot.full .go { margin: 0 0 0 auto; padding: 0 0 0 .5rem; white-space: nowrap; }
     .slot .label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+    .slot > .label { margin-top: .45rem; }
+    .slot > .label + h2 { margin-top: 0; }
     .soon { opacity: .8; }
     .soon h2 { font-size: 1.05rem; }
     @media (prefers-reduced-motion: reduce) { .obj, .slot { transition: none; } a.slot:hover .obj { transform: none; } }
@@ -120,7 +122,9 @@
       .tray { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
       .slot, .slot.wide, .slot.wide:first-child { grid-column: 1; min-height: 0; }
       .slot { display: grid; grid-template-columns: auto 1fr; column-gap: .9rem; align-items: start; }
+      .slot > :not(.obj) { grid-column: 2; }
       .slot .obj { grid-row: span 3; font-size: 2.1rem; padding-top: .2rem; }
+      .slot > .label { margin-top: 0; }
       .slot h2 { margin: 0; }
       .go { padding-top: .3rem; }
       .slot.full { align-items: start; row-gap: .35rem; }
@@ -172,49 +176,46 @@
         <p>A city builder in the spirit of the 1989 original, with a terrain editor, challenges and disasters.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
-      <a class="slot full" href="/trick-deck/">
+      <a class="slot" href="/trick-deck/">
         <span class="obj" aria-hidden="true">🦴</span>
-        <div>
-          <span class="label">New</span>
-          <h2>Trick Deck</h2>
-          <p>Teach your dog tricks five tries at a time: a clicker in your phone, step-by-step plans for 48 tricks, and a trick show that deals from the ones they know.</p>
-        </div>
+        <span class="label">New</span>
+        <h2>Trick Deck</h2>
+        <p>Teach your dog tricks five tries at a time: a clicker in your phone, step-by-step plans for 48 tricks, and a trick show that deals from the ones they know.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
-      <a class="slot full" href="/not-so-long-ago/">
+      <a class="slot" href="/not-so-long-ago/">
         <span class="obj" aria-hidden="true">🏳️‍🌈</span>
-        <div>
-          <span class="label">New</span>
-          <h2>Not So Long Ago</h2>
-          <p>Put in the year each person in your family was born and see LGBTQ+ history across your lives: what was still a crime, what was still banned, and how old each of you was when it changed.</p>
-        </div>
+        <span class="label">New</span>
+        <h2>Not So Long Ago</h2>
+        <p>Put in the year each person in your family was born and see LGBTQ+ history across your lives: what was still a crime, what was still banned, and how old each of you was when it changed.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
-      <a class="slot full" href="/legwork/">
+      <a class="slot" href="/legwork/">
         <span class="obj" aria-hidden="true">🔎</span>
-        <div>
-          <span class="label">New</span>
-          <h2>Legwork</h2>
-          <p>A detective casebook: six grounded crimes in a Great Lakes city, too many leads and not enough hours. Catch the lie, then file your report before the deadline.</p>
-        </div>
+        <span class="label">New</span>
+        <h2>Legwork</h2>
+        <p>A detective casebook: six grounded crimes in a Great Lakes city, too many leads and not enough hours. Catch the lie, then file your report before the deadline.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
-      <a class="slot full" href="/cairn/">
+      <a class="slot" href="/cairn/">
         <span class="obj" aria-hidden="true">🪨</span>
-        <div>
-          <span class="label">New</span>
-          <h2>Cairn</h2>
-          <p>Stack river stones on a rock in a stream, one tap at a time. After five, the wind starts pulling at the stone in your hand.</p>
-        </div>
+        <span class="label">New</span>
+        <h2>Cairn</h2>
+        <p>Stack river stones on a rock in a stream, one tap at a time. After five, the wind starts pulling at the stone in your hand.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
-      <a class="slot full" href="/shelfmark/">
+      <a class="slot" href="/shelfmark/">
         <span class="obj" aria-hidden="true">📚</span>
-        <div>
-          <span class="label">New</span>
-          <h2>Shelfmark</h2>
-          <p>A catalog for the books in your house: where each one is, what you’ve read and who borrowed what. Photograph a shelf, Claude reads the spines, and one link adds them. It syncs through your own Google Drive.</p>
-        </div>
+        <span class="label">New</span>
+        <h2>Shelfmark</h2>
+        <p>A catalog for the books in your house: where each one is, what you’ve read and who borrowed what. Photograph a shelf, Claude reads the spines, and one link adds them. It syncs through your own Google Drive.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/happy-accidents/">
+        <span class="obj" aria-hidden="true">🎨</span>
+        <span class="label">New</span>
+        <h2>Happy Accidents</h2>
+        <p>Flick paint at a canvas and a gentle painter turns each splat into a cloud, a mountain or a happy little tree, in the splat’s own shape. Hit something that’s already there and it changes.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <div class="slot full soon">
