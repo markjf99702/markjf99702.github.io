@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Privacy · junkdrawer.works</title>
+  <meta name="description" content="What the projects at junkdrawer.works keep, where, and what they do when you connect Google Drive.">
+  <meta name="theme-color" content="#f4ede1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1512" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root { --bg: #f4ede1; --ink: #2b2118; --muted: #6d5d4b; --faint: #8f7e6a; --slot: #fbf7ef; --line: #e2d6c2; --accent: #8a4f1c; --brass: #b7863c; color-scheme: light; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1a1512; --ink: #f3e9da; --muted: #b9a893; --faint: #948470; --slot: #2a221c; --line: #3a2f26; --accent: #e6b872; --brass: #93692c; color-scheme: dark; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    main { max-width: 720px; margin: 0 auto; padding: 40px 16px 64px; }
+    a { color: var(--accent); }
+    .back { font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); text-decoration: none; }
+    .back:hover { color: var(--accent); }
+    h1 { font-size: 38px; line-height: 1.1; letter-spacing: -.01em; margin: 18px 0 6px; }
+    .date { color: var(--faint); font-size: 13px; font-weight: 600; margin: 0 0 22px; padding-bottom: 18px; border-bottom: 3px double var(--brass); }
+    .lede { font-size: 18px; color: var(--ink); }
+    h2 { font-size: 21px; line-height: 1.25; margin: 32px 0 8px; }
+    p, li { color: var(--muted); }
+    li { margin: 6px 0; }
+    b { color: var(--ink); font-weight: 650; }
+    code { font: 14px ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: var(--slot); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">‹ junkdrawer.works</a>
+  <h1>Privacy</h1>
+  <p class="date">Last updated September 27, 2026</p>
+  <p class="lede">Everything in the junk drawer runs in your browser. The projects here have no server of their own, no accounts, no analytics and no cookies. What you make stays in your browser, and a few projects can also keep a copy in your own Google Drive if you turn that on.</p>
+
+  <h2>Where your things are kept</h2>
+  <ul>
+    <li><b>In your browser.</b> Each project saves what you make in this browser's local storage on your device. Nobody else can read it, including the person who makes these projects.</li>
+    <li><b>In your Google Drive, if you turn it on.</b> A project that offers it keeps one folder in your Drive, named after the project. Your browser talks to Google Drive directly; nothing passes through any other server.</li>
+    <li><b>In files you download or links you share.</b> Those go wherever you put them.</li>
+  </ul>
+
+  <h2>Projects that can use Google Drive</h2>
+  <ul>
+    <li><b>Shelfmark</b> keeps a <code>Shelfmark</code> folder with your book catalog in <code>Shelfmark library.json</code>. More in <a href="/shelfmark/privacy.html">Shelfmark's privacy page</a>.</li>
+    <li><b>Terraville</b> keeps a <code>Terraville</code> folder with one text file per city for each device you play on. More in <a href="/terraville/privacy.html">Terraville's privacy page</a>.</li>
+    <li><b>Lotería</b> (El Cantor, My tablas and Make tablas) keeps a <code>Lotería</code> folder with <code>Lotería tablas.json</code>. It holds the people and tablas in My tablas, the tablas in Make tablas, and El Cantor's winners and the juego it last printed. Called cards, voices and other settings stay on each device.</li>
+  </ul>
+
+  <h2>What they do with your Google account</h2>
+  <p>Connecting Google Drive asks Google for one permission, <code>drive.file</code>: “see, edit, create, and delete only the specific Google Drive files you use with this app”. The projects share one Google sign-in, called junkdrawer.works, so “this app” means these projects together. They can reach only the folders and files they made themselves, and they can't see, open or list anything else in your Drive.</p>
+  <p>They use this access only to read their own file, merge it with the copy on your device, and write it back. Lotería also reads your Google account's name and email address, to show which account it saves to and to skip Google's account chooser the next time; that stays in your browser.</p>
+  <p>The sign-in Google gives your browser lasts about an hour and is kept in your browser, so a reload doesn't sign you out. Projects that share it can use it during that hour without asking again. It is never sent anywhere except to Google.</p>
+  <p>The use and transfer of information received from Google APIs by junkdrawer.works projects adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements. Your Drive data is used only to show you your own things. It isn't transferred to anyone, used for advertising, or read by any person.</p>
+
+  <h2>Other services the pages talk to</h2>
+  <ul>
+    <li><b>GitHub Pages</b> serves the pages, like any website host. GitHub's own logs may record that your browser loaded them.</li>
+    <li><b>Google Fonts</b> supplies the typefaces for some projects, so Google sees your browser load them.</li>
+    <li><b>Google sign-in</b> is loaded from accounts.google.com only in projects that offer Google Drive, when you open that option or once you've connected.</li>
+    <li>Anything else a single project uses, such as book covers in Shelfmark, is listed on that project's own page.</li>
+  </ul>
+
+  <h2>Removing your data</h2>
+  <ul>
+    <li><b>From a device:</b> use the project's own settings, or clear this site's data in your browser's settings, which clears every project here at once.</li>
+    <li><b>From Google Drive:</b> delete the project's folder.</li>
+    <li><b>Taking back access:</b> remove junkdrawer.works under Third-party apps &amp; services in your Google Account. That takes back access for every project at once.</li>
+  </ul>
+
+  <h2>Questions</h2>
+  <p>The code for every project is open at <a href="https://github.com/markjf99702">github.com/markjf99702</a>, one repository per project, so you can check all of this. Questions or problems can go to that project's issue tracker.</p>
+</main>
+</body>
+</html>
