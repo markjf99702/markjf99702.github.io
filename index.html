@@ -27,6 +27,10 @@
       --brass-1: #f3d08a;
       --brass-2: #b7863c;
       --shadow: rgba(60, 35, 10, .28);
+      /* Label-maker tape for each tray, and the matching text colour for its tiles. */
+      --tools: #1f4f8f; --tools-ink: #1f4f8f;
+      --games: #a8302a; --games-ink: #a52a24;
+      --explore: #2d6a3e; --explore-ink: #2d6a3e;
       color-scheme: light;
     }
     @media (prefers-color-scheme: dark) {
@@ -43,6 +47,9 @@
         --brass-1: #e9c47c;
         --brass-2: #93692c;
         --shadow: rgba(0, 0, 0, .55);
+        --tools: #2a5c9e; --tools-ink: #93b8ec;
+        --games: #aa3a31; --games-ink: #f09a8c;
+        --explore: #2f6e41; --explore-ink: #93cf9f;
         color-scheme: dark;
       }
     }
@@ -75,7 +82,33 @@
     h1 { font-size: clamp(2.3rem, 7vw, 3.6rem); letter-spacing: -.035em; line-height: 1.05; margin: 0; font-weight: 800; }
     h1 span { color: var(--accent); }
     .tag { font-size: clamp(1.1rem, 2.6vw, 1.35rem); margin: .55rem 0 0; font-weight: 600; }
-    .intro { max-width: 36rem; margin: 0 auto 2rem; text-align: center; color: var(--muted); }
+    .intro { max-width: 36rem; margin: 0 auto 1.4rem; text-align: center; color: var(--muted); }
+
+    /* Embossed label-maker tape: one on each tray, and three at the top that jump to them. */
+    .tape {
+      display: inline-block; margin: 0; padding: .34rem .7rem .3rem .85rem;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .16)), var(--tape);
+      color: #fbfaf7; font: 700 1rem/1 ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      letter-spacing: .22em; text-transform: uppercase; text-decoration: none;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, .45), 0 -1px 0 rgba(255, 255, 255, .16);
+      border-radius: 3px; box-shadow: 0 2px 3px rgba(0, 0, 0, .22), inset 0 0 0 1px rgba(0, 0, 0, .1);
+      transform: rotate(-1.2deg);
+    }
+    .tools { --tape: var(--tools); --tone: var(--tools-ink); }
+    .games { --tape: var(--games); --tone: var(--games-ink); }
+    .explore { --tape: var(--explore); --tone: var(--explore-ink); }
+    .jump { display: flex; justify-content: center; flex-wrap: wrap; gap: .8rem 1rem; margin: 0 0 2.2rem; }
+    .jump .tape { font-size: .82rem; transition: transform .15s; }
+    .jump .tape:nth-child(2) { transform: rotate(1deg); }
+    .jump .tape:nth-child(3) { transform: rotate(-.6deg); }
+    .jump .tape:hover { transform: translateY(-2px) rotate(-1.2deg); }
+    .jump .tape:focus-visible { outline: 3px solid var(--tone); outline-offset: 3px; }
+    .bin { scroll-margin-top: 1rem; }
+    .bin + .bin { margin-top: 2.6rem; }
+    /* The tape is stuck over the tray's top edge; the line beside it stays on the paper above. */
+    .bin-head { display: flex; align-items: center; gap: .9rem; margin: 0 0 -4px 18px; position: relative; z-index: 1; }
+    .bin-head .tape { position: relative; top: 10px; }
+    .bin-head p { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.3; }
 
     /* The organizer tray: wood shows through as the dividers. */
     .tray {
@@ -94,47 +127,50 @@
       box-shadow: inset 0 3px 8px var(--shadow), inset 0 -1px 0 rgba(255, 255, 255, .35);
       transition: background .15s;
     }
-    .slot.wide { grid-column: span 3; }
     .slot.full { grid-column: 1 / -1; min-height: 0; flex-direction: row; align-items: center; gap: .9rem; }
-    /* Rows of three, or two where three would leave a tile on its own. The tiles are the <a>s (the strips
-       at the end are <div>s), so the first one's place counting from the last says how many there are.
-       Two wide tiles plus 3n + 1 more: the last four go two to a row. Plus 3n + 2 more: the last two do. */
+    /* Each tray has rows of three, or two where three would leave a tile on its own. The tiles are the <a>s
+       (a "still being built" strip is a <div>), so the first one's place counting from the last says how many
+       there are. 3n + 1 tiles: the first four go two to a row. 3n + 2: the first two do. Just one: the whole row. */
     @media (min-width: 821px) {
-      .tray > a:first-of-type:nth-last-of-type(3n) ~ a:nth-last-of-type(-n + 4),
-      .tray > a:first-of-type:nth-last-of-type(3n + 1) ~ a:nth-last-of-type(-n + 2) { grid-column: span 3; }
+      .tray > a:first-of-type:nth-last-of-type(3n + 1),
+      .tray > a:first-of-type:nth-last-of-type(3n + 1) ~ a:nth-of-type(-n + 4),
+      .tray > a:first-of-type:nth-last-of-type(3n + 2),
+      .tray > a:first-of-type:nth-last-of-type(3n + 2) ~ a:nth-of-type(2) { grid-column: span 3; }
+      .tray > a:only-of-type { grid-column: 1 / -1; }
     }
     a.slot:hover { background: var(--slot-hover); }
     a.slot:hover .obj { transform: translateY(-3px) rotate(-4deg); }
-    a.slot:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    a.slot:focus-visible { outline: 3px solid var(--tone, var(--accent)); outline-offset: 3px; }
     .obj { font-size: 2.5rem; line-height: 1; display: inline-block; transition: transform .2s; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .18)); }
-    .slot h2 { font-size: 1.2rem; margin: .45rem 0 0; letter-spacing: -.01em; }
+    .slot h3 { font-size: 1.2rem; margin: .45rem 0 0; letter-spacing: -.01em; }
     .slot p { margin: 0; color: var(--muted); font-size: .95rem; }
-    .go { margin-top: auto; padding-top: .6rem; font-weight: 700; color: var(--accent); font-size: .92rem; }
-    .slot.full h2 { margin: 0; }
+    .go { margin-top: auto; padding-top: .6rem; font-weight: 700; color: var(--tone, var(--accent)); font-size: .92rem; }
+    .slot.full h3 { margin: 0; }
     .slot.full .go { margin: 0 0 0 auto; padding: 0 0 0 .5rem; white-space: nowrap; }
-    .slot .label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+    .slot .label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--tone, var(--accent)); }
     .slot > .label { margin-top: .45rem; }
-    .slot > .label + h2 { margin-top: 0; }
+    .slot > .label + h3 { margin-top: 0; }
     .soon { opacity: .8; }
-    .soon h2 { font-size: 1.05rem; }
+    .soon h3 { font-size: 1.05rem; }
     @media (prefers-reduced-motion: reduce) { .obj, .slot { transition: none; } a.slot:hover .obj { transform: none; } }
 
     @media (max-width: 820px) {
       .tray { grid-template-columns: 1fr 1fr; }
-      .slot, .slot.wide { grid-column: span 1; }
-      .slot.wide:first-child { grid-column: 1 / -1; }
-      /* Two to a row here: with an even number of tiles, the second wide one gets a row to itself too, so the rest pair up. */
-      .tray > a:first-of-type:nth-last-of-type(2n) + a.wide { grid-column: 1 / -1; }
+      .slot { grid-column: span 1; }
+      /* Two to a row here: with an odd number of tiles, the first gets a row to itself so the rest pair up. */
+      .tray > a:first-of-type:nth-last-of-type(2n + 1) { grid-column: 1 / -1; }
     }
     @media (max-width: 540px) {
       .wrap { padding-top: 2.4rem; }
       .tray { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
-      .slot, .slot.wide, .slot.wide:first-child { grid-column: 1; min-height: 0; }
+      .slot, .tray > a:first-of-type:nth-last-of-type(2n + 1) { grid-column: 1; min-height: 0; }
+      .bin-head { margin-left: 12px; gap: .7rem; }
+      .bin-head p { font-size: .9rem; }
       .slot { display: grid; grid-template-columns: auto 1fr; column-gap: .9rem; align-items: start; }
       .slot > :not(.obj) { grid-column: 2; }
       .slot .obj { grid-row: span 3; font-size: 2.1rem; padding-top: .2rem; }
       .slot > .label { margin-top: 0; }
-      .slot h2 { margin: 0; }
+      .slot h3 { margin: 0; }
       .go { padding-top: .3rem; }
       .slot.full { align-items: start; row-gap: .35rem; }
       .slot.full .obj { grid-row: span 2; }
@@ -154,137 +190,155 @@
     </header>
     <p class="intro">No dead batteries, no mystery keys, no pens that won’t write. Just small things that each do one job well. They all run in your browser, with nothing to install and no accounts.</p>
 
-    <section class="tray" aria-label="What’s in the drawer">
-      <a class="slot wide" href="/good-day-for/">
+    <nav class="jump" aria-label="Sections"><a class="tape tools" href="#tools">Tools</a><a class="tape games" href="#games">Games</a><a class="tape explore" href="#explore">Explore</a></nav>
+
+    <section class="bin tools" id="tools" aria-labelledby="tools-h">
+      <div class="bin-head"><h2 class="tape tools" id="tools-h">Tools</h2><p>Get something done.</p></div>
+      <div class="tray">
+      <a class="slot" href="/good-day-for/">
         <span class="obj" aria-hidden="true">🌤️</span>
-        <h2>Good Day For</h2>
+        <h3>Good Day For</h3>
         <p>When the weather will let you stain the deck, paint the house, mow, seed the lawn or hang out the laundry.</p>
-        <span class="go" aria-hidden="true">Open →</span>
-      </a>
-      <a class="slot wide" href="/el-cantor/">
-        <span class="obj" aria-hidden="true">🎴</span>
-        <h2>El Cantor</h2>
-        <p>Lotería for the family table: a caller that reads the cards aloud, play-along tablas on every phone, and tablas to print.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/kerf/">
         <span class="obj" aria-hidden="true">🪚</span>
-        <h2>Kerf</h2>
+        <h3>Kerf</h3>
         <p>List the parts for a woodworking project. Kerf finds the cheapest boards and sheets to buy and how to cut them.</p>
-        <span class="go" aria-hidden="true">Open →</span>
-      </a>
-      <a class="slot" href="/starhop/">
-        <span class="obj" aria-hidden="true">🔭</span>
-        <h2>Starhop</h2>
-        <p>What’s up tonight, what’s worth a look through a telescope, and how to find it by hopping from stars you know.</p>
-        <span class="go" aria-hidden="true">Open →</span>
-      </a>
-      <a class="slot" href="/terraville/">
-        <span class="obj" aria-hidden="true">🏙️</span>
-        <h2>Terraville</h2>
-        <p>A city builder in the spirit of the 1989 original, with a terrain editor, challenges and disasters.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/trick-deck/">
         <span class="obj" aria-hidden="true">🦴</span>
         <span class="label">New</span>
-        <h2>Trick Deck</h2>
+        <h3>Trick Deck</h3>
         <p>Teach your dog tricks five tries at a time: a clicker in your phone, step-by-step plans for 48 tricks, and a trick show that deals from the ones they know.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
-      <a class="slot" href="/not-so-long-ago/">
-        <span class="obj" aria-hidden="true">🏳️‍🌈</span>
+      <a class="slot" href="/shelfmark/">
+        <span class="obj" aria-hidden="true">📚</span>
         <span class="label">New</span>
-        <h2>Not So Long Ago</h2>
-        <p>Put in the year each person in your family was born and see LGBTQ+ history across your lives: what was still a crime, what was still banned, and how old each of you was when it changed.</p>
+        <h3>Shelfmark</h3>
+        <p>A catalog for the books in your house: where each one is, what you’ve read and who borrowed what. Photograph a shelf, Claude reads the spines, and one link adds them. It syncs through your own Google Drive.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/name-tag/">
+        <span class="obj" aria-hidden="true">🏷️</span>
+        <span class="label">New</span>
+        <h3>Name Tag</h3>
+        <p>Find a name for a new pet from normal or odd picks, like coat colour, snacks or someone at work. Or check the one you chose: whether it sounds like “sit”, rhymes with the cat, or makes the vet snigger.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/on-balance/">
+        <span class="obj" aria-hidden="true">⚖️</span>
+        <span class="label">New</span>
+        <h3>On Balance</h3>
+        <p>List your choices and what matters, and see which way a hard decision tips, how sure you can be, and the smallest change that would tip it the other way. Send it to someone else to see where you differ.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      </div>
+    </section>
+
+    <section class="bin games" id="games" aria-labelledby="games-h">
+      <div class="bin-head"><h2 class="tape games" id="games-h">Games</h2><p>Play something.</p></div>
+      <div class="tray">
+      <a class="slot" href="/el-cantor/">
+        <span class="obj" aria-hidden="true">🎴</span>
+        <h3>El Cantor</h3>
+        <p>Lotería for the family table: a caller that reads the cards aloud, play-along tablas on every phone, and tablas to print.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/terraville/">
+        <span class="obj" aria-hidden="true">🏙️</span>
+        <h3>Terraville</h3>
+        <p>A city builder in the spirit of the 1989 original, with a terrain editor, challenges and disasters.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/legwork/">
         <span class="obj" aria-hidden="true">🔎</span>
         <span class="label">New</span>
-        <h2>Legwork</h2>
+        <h3>Legwork</h3>
         <p>A detective casebook: six grounded crimes in a Great Lakes city, too many leads and not enough hours. Catch the lie, then file your report before the deadline.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/cairn/">
         <span class="obj" aria-hidden="true">🪨</span>
         <span class="label">New</span>
-        <h2>Cairn</h2>
+        <h3>Cairn</h3>
         <p>Stack river stones on a rock in a stream, one tap at a time. After five, the wind starts pulling at the stone in your hand.</p>
-        <span class="go" aria-hidden="true">Open →</span>
-      </a>
-      <a class="slot" href="/shelfmark/">
-        <span class="obj" aria-hidden="true">📚</span>
-        <span class="label">New</span>
-        <h2>Shelfmark</h2>
-        <p>A catalog for the books in your house: where each one is, what you’ve read and who borrowed what. Photograph a shelf, Claude reads the spines, and one link adds them. It syncs through your own Google Drive.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/happy-accidents/">
         <span class="obj" aria-hidden="true">🎨</span>
         <span class="label">New</span>
-        <h2>Happy Accidents</h2>
+        <h3>Happy Accidents</h3>
         <p>Flick paint at a canvas and a gentle painter turns each splat into a cloud, a mountain or a happy little tree, in the splat’s own shape. Hit something that’s already there and it changes.</p>
-        <span class="go" aria-hidden="true">Open →</span>
-      </a>
-      <a class="slot" href="/name-tag/">
-        <span class="obj" aria-hidden="true">🏷️</span>
-        <span class="label">New</span>
-        <h2>Name Tag</h2>
-        <p>Find a name for a new pet from normal or odd picks, like coat colour, snacks or someone at work. Or check the one you chose: whether it sounds like “sit”, rhymes with the cat, or makes the vet snigger.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/ghost/">
         <span class="obj" aria-hidden="true">👻</span>
         <span class="label">New</span>
-        <h2>Ghost</h2>
+        <h3>Ghost</h3>
         <p>The old spelling game on a spirit board: add a letter, don’t be the one who finishes a word, and challenge anyone you think is bluffing. Play against three ghosts or pass the phone around.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/pitch-dark/">
         <span class="obj" aria-hidden="true">🔦</span>
         <span class="label">New</span>
-        <h2>Pitch Dark</h2>
+        <h3>Pitch Dark</h3>
         <p>The power’s out. Search the house room by room with a flashlight and pick up what’s on the list before the battery dies. Spare batteries are hidden in the clutter.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/lanthorn/">
         <span class="obj" aria-hidden="true">🗝️</span>
         <span class="label">New</span>
-        <h2>Lanthorn</h2>
+        <h3>Lanthorn</h3>
         <p>A mystery in the spirit of Myst. Look through a brass eyeglass into another world at any hour, open three locks with what you see after dark, and follow the woman who left them.</p>
-        <span class="go" aria-hidden="true">Open →</span>
-      </a>
-      <a class="slot" href="/bloodlines/">
-        <span class="obj" aria-hidden="true">🏇</span>
-        <span class="label">New</span>
-        <h2>Bloodlines</h2>
-        <p>The racehorse family tree. Follow any horse back, father to son, to one of three stallions from around 1700, or pick two and see how they’re related.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <a class="slot" href="/post-time/">
         <span class="obj" aria-hidden="true">🎟️</span>
         <span class="label">New</span>
-        <h2>Post Time</h2>
+        <h3>Post Time</h3>
         <p>Eight races every Saturday at a made-up track: read the form, bet the tote, and watch each one from the gate to the wire. Back the winner and you’re in the winner’s circle photo.</p>
-        <span class="go" aria-hidden="true">Open →</span>
-      </a>
-      <a class="slot" href="/on-balance/">
-        <span class="obj" aria-hidden="true">⚖️</span>
-        <span class="label">New</span>
-        <h2>On Balance</h2>
-        <p>List your choices and what matters, and see which way a hard decision tips, how sure you can be, and the smallest change that would tip it the other way. Send it to someone else to see where you differ.</p>
         <span class="go" aria-hidden="true">Open →</span>
       </a>
       <div class="slot full soon">
         <span class="obj" aria-hidden="true">⚾</span>
         <div>
           <span class="label">Still being built</span>
-          <h2>Twenty-Eighty</h2>
+          <h3>Twenty-Eighty</h3>
           <p>A baseball front-office sim where every player is graded on the scouts’ 20–80 scale.</p>
         </div>
       </div>
+      </div>
     </section>
+
+    <section class="bin explore" id="explore" aria-labelledby="explore-h">
+      <div class="bin-head"><h2 class="tape explore" id="explore-h">Explore</h2><p>Find something out.</p></div>
+      <div class="tray">
+      <a class="slot" href="/starhop/">
+        <span class="obj" aria-hidden="true">🔭</span>
+        <h3>Starhop</h3>
+        <p>What’s up tonight, what’s worth a look through a telescope, and how to find it by hopping from stars you know.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/not-so-long-ago/">
+        <span class="obj" aria-hidden="true">🏳️‍🌈</span>
+        <span class="label">New</span>
+        <h3>Not So Long Ago</h3>
+        <p>Put in the year each person in your family was born and see LGBTQ+ history across your lives: what was still a crime, what was still banned, and how old each of you was when it changed.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      <a class="slot" href="/bloodlines/">
+        <span class="obj" aria-hidden="true">🏇</span>
+        <span class="label">New</span>
+        <h3>Bloodlines</h3>
+        <p>The racehorse family tree. Follow any horse back, father to son, to one of three stallions from around 1700, or pick two and see how they’re related.</p>
+        <span class="go" aria-hidden="true">Open →</span>
+      </a>
+      </div>
+    </section>
+
   </main>
   <footer>Tidied by someone who hates junk drawers.</footer>
 </body>
