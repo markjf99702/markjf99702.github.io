@@ -3,16 +3,16 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex">
 <title>junkdrawer.works</title>
-<p>Nothing to see here. This page hands saved games to their new addresses.</p>
+<p>Nothing to see here. This page hands saves to projects at their new addresses.</p>
 <script>
-// The games used to live at junkdrawer.works/GAME/ and now each has its own address, GAME.junkdrawer.works.
-// A browser keeps each address's saves apart, so their saves stayed behind here. The first time a game opens at
-// its new address, its carry.js loads this page in a hidden frame and asks for them, and this answers with that
-// game's saves and nothing else. Nothing is removed from here.
+// The games, and the tools Mark installs, used to live at junkdrawer.works/NAME/ and now each has its own address,
+// NAME.junkdrawer.works. A browser keeps each address's saves apart, so their saves stayed behind here. The first
+// time a project opens at its new address, its carry.js loads this page in a hidden frame and asks for them, and
+// this answers with that project's saves and nothing else. Nothing is removed from here.
 //
 // local: localStorage keys, exactly or by prefix. idb: IndexedDB stores, copied whole.
 // junkdrawer.google is the Google sign-in the Drive projects share; it goes along so sign-in remembers the account.
-const GAMES = {
+const PROJECTS = {
   'el-cantor': { local: ['loteria.', 'junkdrawer.google'] },
   'terraville': { local: ['terraville.', 'junkdrawer.google'] },
   'legwork': { local: ['legwork.'] },
@@ -27,6 +27,11 @@ const GAMES = {
   'blot': { local: ['blot.'] },
   'patience': { local: ['patience.'] },
   'full-house': { local: ['full-house.'] },
+  'kerf': { local: ['kerf.'] },
+  'shelfmark': { local: ['shelfmark.', 'junkdrawer.google'] },
+  'starhop': { local: ['starhop.'] },
+  'good-day-for': { local: ['gooddayfor:'] },
+  'trick-deck': { local: ['trickdeck.'] },
 };
 
 // Every entry in one IndexedDB store, or null if the database or the store was never made here.
@@ -51,16 +56,16 @@ function readStore({ db, store }) {
 
 addEventListener('message', async e => {
   const m = /^https:\/\/([a-z0-9-]+)\.junkdrawer\.works$/.exec(e.origin);
-  const game = m && Object.hasOwn(GAMES, m[1]) && GAMES[m[1]];
-  if (!game || !e.data || e.data.carry !== true) return;
+  const project = m && Object.hasOwn(PROJECTS, m[1]) && PROJECTS[m[1]];
+  if (!project || !e.data || e.data.carry !== true) return;
   const local = {}, idb = [];
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (game.local.some(p => key === p || (/[.:/]$/.test(p) && key.startsWith(p)))) local[key] = localStorage.getItem(key);
+      if (project.local.some(p => key === p || (/[.:/]$/.test(p) && key.startsWith(p)))) local[key] = localStorage.getItem(key);
     }
   } catch { /* storage blocked here: nothing to hand over */ }
-  for (const store of game.idb || []) {
+  for (const store of project.idb || []) {
     try { const got = await readStore(store); if (got) idb.push(got); } catch { /* skip it */ }
   }
   e.source.postMessage({ carried: { local, idb } }, e.origin);
