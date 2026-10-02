@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>junkdrawer.works</title>
+<p>Nothing to see here. This page hands saved games to their new addresses.</p>
+<script>
+// The games used to live at junkdrawer.works/GAME/ and now each has its own address, GAME.junkdrawer.works.
+// A browser keeps each address's saves apart, so their saves stayed behind here. The first time a game opens at
+// its new address, its carry.js loads this page in a hidden frame and asks for them, and this answers with that
+// game's saves and nothing else. Nothing is removed from here.
+//
+// local: localStorage keys, exactly or by prefix. idb: IndexedDB stores, copied whole.
+// junkdrawer.google is the Google sign-in the Drive projects share; it goes along so sign-in remembers the account.
+const GAMES = {
+  'el-cantor': { local: ['loteria.', 'junkdrawer.google'] },
+  'terraville': { local: ['terraville.', 'junkdrawer.google'] },
+  'legwork': { local: ['legwork.'] },
+  'cairn': { local: ['cairn.'] },
+  'happy-accidents': { local: ['happy-accidents:'] },
+  'ghost': { local: ['ghost.'] },
+  'pitch-dark': { local: ['pitch-dark:'] },
+  'lanthorn': { local: ['lanthorn:'] },
+  'post-time': { local: ['post-time/'] },
+  'war-room': { local: ['war-room:'] },
+  'twenty-eighty': { local: ['twenty-eighty.', 'junkdrawer.google'], idb: [{ db: 'twenty-eighty', store: 'saves' }] },
+  'blot': { local: ['blot.'] },
+  'patience': { local: ['patience.'] },
+  'full-house': { local: ['full-house.'] },
+};
+
+// Every entry in one IndexedDB store, or null if the database or the store was never made here.
+function readStore({ db, store }) {
+  return new Promise(resolve => {
+    const req = indexedDB.open(db);
+    req.onupgradeneeded = () => req.transaction.abort(); // it didn't exist: don't leave an empty one behind
+    req.onerror = req.onblocked = () => resolve(null);
+    req.onsuccess = () => {
+      const conn = req.result;
+      if (!conn.objectStoreNames.contains(store)) { conn.close(); resolve(null); return; }
+      const s = conn.transaction(store).objectStore(store), keys = s.getAllKeys(), values = s.getAll();
+      values.onsuccess = () => {
+        conn.close();
+        const entries = keys.result.map((key, i) => [key, values.result[i]]);
+        resolve(entries.length ? { db, version: conn.version, store, keyPath: s.keyPath, autoIncrement: s.autoIncrement, entries } : null);
+      };
+      values.onerror = () => { conn.close(); resolve(null); };
+    };
+  });
+}
+
+addEventListener('message', async e => {
+  const m = /^https:\/\/([a-z0-9-]+)\.junkdrawer\.works$/.exec(e.origin);
+  const game = m && Object.hasOwn(GAMES, m[1]) && GAMES[m[1]];
+  if (!game || !e.data || e.data.carry !== true) return;
+  const local = {}, idb = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (game.local.some(p => key === p || (/[.:/]$/.test(p) && key.startsWith(p)))) local[key] = localStorage.getItem(key);
+    }
+  } catch { /* storage blocked here: nothing to hand over */ }
+  for (const store of game.idb || []) {
+    try { const got = await readStore(store); if (got) idb.push(got); } catch { /* skip it */ }
+  }
+  e.source.postMessage({ carried: { local, idb } }, e.origin);
+});
+</script>
+</html>
