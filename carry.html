@@ -33,6 +33,8 @@ const PROJECTS = {
   'good-day-for': { local: ['gooddayfor:'] },
   'trick-deck': { local: ['trickdeck.'] },
   'rows-and-rails': { local: ['rows-and-rails.'] },
+  // Parts Bin's inventory is the key 'parts-bin' itself; 'pb.' and 'sr.' hold its last-used bin, filter and parts list.
+  'parts-bin': { local: ['parts-bin', 'parts-bin.', 'pb.', 'sr.', 'junkdrawer.google'] },
 };
 
 // Every entry in one IndexedDB store, or null if the database or the store was never made here.
