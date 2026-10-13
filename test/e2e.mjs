@@ -49,6 +49,26 @@ async function open(path, { width, height, phone = false }, scheme = 'light') {
   return { ctx, page, where };
 }
 
+// Each line of an element's text, as the words on it.
+const lines = (page, selector) => page.evaluate(selector => {
+  const words = [];
+  const walk = document.createTreeWalker(document.querySelector(selector), NodeFilter.SHOW_TEXT);
+  for (let node; (node = walk.nextNode());) {
+    for (const m of node.data.matchAll(/\S+/g)) {
+      const r = document.createRange();
+      r.setStart(node, m.index);
+      r.setEnd(node, m.index + m[0].length);
+      words.push({ word: m[0], top: r.getClientRects()[0].top });
+    }
+  }
+  const out = [];
+  for (const w of words) {
+    const line = out[out.length - 1];
+    if (line && Math.abs(line.top - w.top) < 4) line.words.push(w.word); else out.push({ top: w.top, words: [w.word] });
+  }
+  return out.map(l => l.words);
+}, selector);
+
 try {
   for (const path of PAGES) for (const size of SIZES) for (const scheme of ['light', 'dark']) {
     const { ctx, page, where } = await open(path, size, scheme);
@@ -86,6 +106,16 @@ try {
     check(!straight.length, `${where}: straight quotes in ${straight.map(l => `“${l.slice(0, 60)}”`).join(', ')}`);
 
     await ctx.close();
+  }
+
+  // A headline doesn't leave its last word on a line of its own.
+  for (const [path, selector, widths] of [['/', '.tag', [320, 390, 414]], ['/404.html', '.lost h1', [320, 390, 800, 1280]]]) {
+    for (const width of widths) {
+      const { ctx, page, where } = await open(path, { width, height: 800, phone: width < 500 });
+      const got = await lines(page, selector);
+      check(got.length < 2 || got[got.length - 1].length > 1, `${where}: ${selector} breaks as ${got.map(l => `“${l.join(' ')}”`).join(' / ')}`);
+      await ctx.close();
+    }
   }
 } finally {
   await browser.close();
