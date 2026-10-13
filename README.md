@@ -11,3 +11,4 @@ This repo is the front of the drawer: the home page at [junkdrawer.works](https:
 - `CNAME`: tells GitHub Pages this site's domain. Leave it alone.
 - `og.png`: the picture shown when a link is shared in a message. After adding or reordering projects, redraw it with `node tools/og.mjs` (needs Playwright): the tray gets one compartment per tile, in order.
 - `tools/og.mjs`: draws `og.png`.
+- `test/e2e.mjs`: opens the pages in Chromium on phones, a tablet and a desktop, in light and dark, and checks how they look and read. `npm test` runs it (needs Playwright).
