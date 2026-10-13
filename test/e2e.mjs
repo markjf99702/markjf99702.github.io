@@ -1,5 +1,5 @@
 // Opens the drawer's pages in Chromium the way people see them:  node test/e2e.mjs  (needs Playwright)
-// The home page, the privacy page and the 404 page on a phone, a tablet and a desktop, in light and dark: nothing
+// The home page, the privacy page and the 404 page on two phones, a tablet and a desktop, in light and dark: nothing
 // goes wrong, nothing loads from elsewhere and nothing scrolls sideways. Headless Chromium has its own fonts, so a
 // line can break a word earlier or later on a real phone.
 import { createRequire } from 'node:module';
@@ -26,6 +26,7 @@ const base = `http://localhost:${server.address().port}`;
 
 const PAGES = ['/', '/privacy.html', '/404.html'];
 const SIZES = [
+  { width: 320, height: 640, phone: true }, // the smallest phones, and a desktop browser zoomed to 400%
   { width: 390, height: 844, phone: true },
   { width: 800, height: 1000 },
   { width: 1280, height: 800 },
