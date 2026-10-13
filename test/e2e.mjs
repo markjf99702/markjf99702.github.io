@@ -81,6 +81,10 @@ try {
     });
     check(!faint.length, `${where}: text too faint to read: ${faint.join('; ')}`);
 
+    // Curly apostrophes and quotes in what people read, like the rest of the copy.
+    const straight = await page.evaluate(() => document.body.innerText.split('\n').filter(l => /['"]/.test(l)));
+    check(!straight.length, `${where}: straight quotes in ${straight.map(l => `“${l.slice(0, 60)}”`).join(', ')}`);
+
     await ctx.close();
   }
 } finally {
