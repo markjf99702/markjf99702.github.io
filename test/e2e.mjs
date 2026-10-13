@@ -1,7 +1,8 @@
 // Opens the drawer's pages in Chromium the way people see them:  node test/e2e.mjs  (needs Playwright)
 // The home page, the privacy page and the 404 page on two phones, a tablet and a desktop, in light and dark: nothing
-// goes wrong, nothing loads from elsewhere, nothing scrolls sideways and the text is dark enough to read. Headless
-// Chromium has its own fonts, so a line can break a word earlier or later on a real phone.
+// goes wrong, nothing loads from elsewhere, nothing scrolls sideways, the text is dark enough to read and the quotes
+// are curly. Then lines that have broken badly before: a headline's last word alone, a range like 20–80 split in two.
+// Headless Chromium has its own fonts, so a line can break a word earlier or later on a real phone.
 import { createRequire } from 'node:module';
 import { execSync } from 'node:child_process';
 import { createServer } from 'node:http';
@@ -116,6 +117,27 @@ try {
       check(got.length < 2 || got[got.length - 1].length > 1, `${where}: ${selector} breaks as ${got.map(l => `“${l.join(' ')}”`).join(' / ')}`);
       await ctx.close();
     }
+  }
+
+  // A range like 20–80 stays on one line at every width.
+  {
+    const { ctx, page } = await open('/', { width: 1300, height: 800 });
+    for (let width = 320; width <= 1300; width += 10) {
+      await page.setViewportSize({ width, height: 800 });
+      const split = await page.evaluate(() => {
+        const out = [];
+        const walk = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT);
+        for (let node; (node = walk.nextNode());) {
+          for (const m of node.data.matchAll(/\d+[–⁠]+\d+/g)) {
+            const top = i => { const r = document.createRange(); r.setStart(node, i); r.setEnd(node, i + 1); return r.getClientRects()[0].top; };
+            if (Math.abs(top(m.index) - top(m.index + m[0].length - 1)) > 4) out.push(m[0].replace(/⁠/g, ''));
+          }
+        }
+        return out;
+      });
+      check(!split.length, `/ at ${width}px: ${split.join(', ')} breaks across two lines`);
+    }
+    await ctx.close();
   }
 } finally {
   await browser.close();
