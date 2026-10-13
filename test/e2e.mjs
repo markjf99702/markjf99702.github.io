@@ -128,9 +128,9 @@ try {
         const out = [];
         const walk = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT);
         for (let node; (node = walk.nextNode());) {
-          for (const m of node.data.matchAll(/\d+[–⁠]+\d+/g)) {
+          for (const m of node.data.matchAll(/\d+[–\u2060]+\d+/g)) {
             const top = i => { const r = document.createRange(); r.setStart(node, i); r.setEnd(node, i + 1); return r.getClientRects()[0].top; };
-            if (Math.abs(top(m.index) - top(m.index + m[0].length - 1)) > 4) out.push(m[0].replace(/⁠/g, ''));
+            if (Math.abs(top(m.index) - top(m.index + m[0].length - 1)) > 4) out.push(m[0].replace(/\u2060/g, ''));
           }
         }
         return out;
