@@ -36,6 +36,9 @@ const PROJECTS = {
   // Parts Bin's inventory is the key 'parts-bin' itself; 'pb.' and 'sr.' hold its last-used bin, filter and parts list.
   'parts-bin': { local: ['parts-bin', 'parts-bin.', 'pb.', 'sr.', 'junkdrawer.google'] },
   'night-after-night': { local: ['night-after-night.'] },
+  'pilot-hole': { local: ['pilot-hole.'] },
+  // This Side Up keeps the move's list in localStorage and the box photos in IndexedDB.
+  'this-side-up': { local: ['this-side-up.'], idb: [{ db: 'this-side-up', store: 'photos' }] },
 };
 
 // Every entry in one IndexedDB store, or null if the database or the store was never made here.
