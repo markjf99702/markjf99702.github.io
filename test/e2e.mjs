@@ -153,8 +153,9 @@ try {
       await page.keyboard.press('Tab'); // focus then shows the way it does for someone using a keyboard
       const lone = size.width > 820 ? '[data-l="1"]' : size.width > 540 ? '[data-m="1"]' : null;
       for (const tray of ['tools', 'games', 'explore']) {
+        check(await page.locator(`#${tray} a.slot`).count() > 0, `${where}: found no tiles to focus in the ${tray} tray`);
         for (const [tile, kind] of [[page.locator(`#${tray} a.slot`).first(), ''], ...(lone ? [[page.locator(`#${tray} a.slot${lone}`).first(), ', in a row of its own,']] : [])]) {
-          if (!await tile.count()) continue;
+          if (!await tile.count()) continue; // not every tray has a tile in a row of its own
           await page.evaluate(() => document.activeElement.blur());
           await tile.evaluate(el => el.scrollIntoView({ block: 'center' }));
           const box = await tile.boundingBox();
@@ -215,6 +216,7 @@ try {
     const tiles = await page.evaluate(() => [...document.querySelectorAll('.slot > .obj')].map(o => o.textContent));
     await ctx.close();
     const objects = objectsIn(await readFile(join(root, 'index.html'), 'utf8'));
+    check(objects.length > 0, 'og.png: tools/og.mjs finds no tiles in index.html');
     const drawing = await browser.newPage({ viewport: { width: 1200, height: 630 } });
     for (const [list, want] of [[objects, tiles], [Array.from({ length: 70 }, (_, i) => objects[i % objects.length])]]) {
       await drawing.setContent(card(list));
