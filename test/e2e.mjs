@@ -2,7 +2,8 @@
 // The home page, the privacy page and the 404 page on two phones, a tablet and a desktop, in light and dark: nothing
 // goes wrong, nothing loads from elsewhere, nothing scrolls sideways, the text is dark enough to read and the quotes
 // are curly. Then lines that have broken badly before: a headline's last word alone, a range like 20–80 split in two.
-// Headless Chromium has its own fonts, so a line can break a word earlier or later on a real phone.
+// Headless Chromium has its own fonts, so a line can break a word earlier or later on a real phone. Last, the share
+// card that tools/og.mjs draws: a compartment for every tile, each big enough to make out what's in it.
 import { createRequire } from 'node:module';
 import { execSync } from 'node:child_process';
 import { createServer } from 'node:http';
@@ -10,6 +11,7 @@ import { readFile } from 'node:fs/promises';
 import { join, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
+import { card, objectsIn } from '../tools/og.mjs';
 
 const require = createRequire(import.meta.url);
 let pw;
@@ -138,6 +140,36 @@ try {
       check(!split.length, `/ at ${width}px: ${split.join(', ')} breaks across two lines`);
     }
     await ctx.close();
+  }
+
+  // The share card: one compartment per tile in page order, each 40px or more so its object can be made out, and all of
+  // it on the card. Then 70 projects, more than four rows of 14 hold, still fit.
+  {
+    const { ctx, page } = await open('/', { width: 1280, height: 800 });
+    const tiles = await page.evaluate(() => [...document.querySelectorAll('.slot > .obj')].map(o => o.textContent));
+    await ctx.close();
+    const objects = objectsIn(await readFile(join(root, 'index.html'), 'utf8'));
+    const drawing = await browser.newPage({ viewport: { width: 1200, height: 630 } });
+    for (const [list, want] of [[objects, tiles], [Array.from({ length: 70 }, (_, i) => objects[i % objects.length])]]) {
+      await drawing.setContent(card(list));
+      const got = await drawing.evaluate(() => {
+        const slots = [...document.querySelectorAll('.slot')].map(s => ({ text: s.textContent, box: s.getBoundingClientRect() }));
+        return {
+          objects: slots.map(s => s.text),
+          smallest: Math.min(...slots.map(s => Math.min(s.box.width, s.box.height))),
+          off: [...document.body.children].some(el => {
+            const r = el.getBoundingClientRect();
+            return r.top < 0 || r.left < 0 || r.bottom > innerHeight || r.right > innerWidth;
+          }),
+        };
+      });
+      const what = `og.png with ${list.length} projects`;
+      if (want) check(JSON.stringify(got.objects) === JSON.stringify(want), `${what}: the compartments hold ${got.objects.join('')}, not the tiles ${want.join('')}`);
+      check(got.objects.length === list.length, `${what}: ${got.objects.length} compartments`);
+      check(got.smallest >= 40, `${what}: compartments are ${got.smallest}px, too small to make out what's in them`);
+      check(!got.off, `${what}: part of the card is cut off`);
+    }
+    await drawing.close();
   }
 } finally {
   await browser.close();
