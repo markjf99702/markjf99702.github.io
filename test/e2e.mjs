@@ -2,8 +2,9 @@
 // The home page, the privacy page and the 404 page on two phones, a tablet and a desktop, in light and dark: nothing
 // goes wrong, nothing loads from elsewhere, nothing scrolls sideways, the text is dark enough to read and the quotes
 // are curly. Then lines that have broken badly before: a headline's last word alone, a range like 20–80 split in two.
-// Headless Chromium has its own fonts, so a line can break a word earlier or later on a real phone. Last, the share
-// card that tools/og.mjs draws: a compartment for every tile, each big enough to make out what's in it.
+// Headless Chromium has its own fonts, so a line can break a word earlier or later on a real phone. Then a tile's
+// focus ring, which has to show up against what it's drawn on. Last, the share card that tools/og.mjs draws: a
+// compartment for every tile, each big enough to make out what's in it.
 import { createRequire } from 'node:module';
 import { execSync } from 'node:child_process';
 import { createServer } from 'node:http';
@@ -140,6 +141,71 @@ try {
       check(!split.length, `/ at ${width}px: ${split.join(', ')} breaks across two lines`);
     }
     await ctx.close();
+  }
+
+  // A tile's keyboard focus ring changes the pixels it covers by 3:1 or more, at least 2px deep, on all four sides: the
+  // first tile in each tray and one in a row of its own, in light and dark. The wood around a tile is too close in
+  // colour to the trays' own, so a ring drawn there barely shows.
+  {
+    const decoder = await browser.newPage();
+    for (const size of SIZES.slice(1)) for (const scheme of ['light', 'dark']) {
+      const { ctx, page, where } = await open('/', size, scheme);
+      await page.keyboard.press('Tab'); // focus then shows the way it does for someone using a keyboard
+      const lone = size.width > 820 ? '[data-l="1"]' : size.width > 540 ? '[data-m="1"]' : null;
+      for (const tray of ['tools', 'games', 'explore']) {
+        for (const [tile, kind] of [[page.locator(`#${tray} a.slot`).first(), ''], ...(lone ? [[page.locator(`#${tray} a.slot${lone}`).first(), ', in a row of its own,']] : [])]) {
+          if (!await tile.count()) continue;
+          await page.evaluate(() => document.activeElement.blur());
+          await tile.evaluate(el => el.scrollIntoView({ block: 'center' }));
+          const box = await tile.boundingBox();
+          const clip = { x: box.x - 8, y: box.y - 8, width: box.width + 16, height: box.height + 16 };
+          const before = await page.screenshot({ clip });
+          await tile.evaluate(el => el.focus({ preventScroll: true }));
+          const name = `${await tile.locator('h3').textContent()}${kind}`;
+          check(await tile.evaluate(el => el.matches(':focus-visible')), `${where}: ${name} shows no focus ring`);
+          const after = await page.screenshot({ clip });
+          // Across the middle of each side, from 8px outside the tile to 12px inside it: the longest run of pixels that
+          // focus changes by 3:1 or more, and the most it changes any of them.
+          const sides = await decoder.evaluate(async ([a, b, scale]) => {
+            const load = async png => {
+              const img = new Image();
+              img.src = `data:image/png;base64,${png}`;
+              await img.decode();
+              const c = new OffscreenCanvas(img.width, img.height), g = c.getContext('2d');
+              g.drawImage(img, 0, 0);
+              return g.getImageData(0, 0, img.width, img.height);
+            };
+            const [A, B] = [await load(a), await load(b)];
+            const lum = (d, i) => {
+              const f = v => ((v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+              return 0.2126 * f(d[i]) + 0.7152 * f(d[i + 1]) + 0.0722 * f(d[i + 2]);
+            };
+            const ratio = ([x, y]) => {
+              const i = (y * A.width + x) * 4;
+              const [hi, lo] = [lum(A.data, i), lum(B.data, i)].sort((p, q) => q - p);
+              return (hi + 0.05) / (lo + 0.05);
+            };
+            const { width: w, height: h } = A;
+            const across = { left: k => [k, h >> 1], right: k => [w - 1 - k, h >> 1], top: k => [w >> 1, k], bottom: k => [w >> 1, h - 1 - k] };
+            return Object.entries(across).map(([side, at]) => {
+              let run = 0, longest = 0, most = 1;
+              for (let k = 0; k < 20 * scale; k++) {
+                const r = ratio(at(k));
+                most = Math.max(most, r);
+                run = r >= 3 ? run + 1 : 0;
+                longest = Math.max(longest, run);
+              }
+              return [side, longest / scale, most];
+            });
+          }, [before.toString('base64'), after.toString('base64'), size.phone ? 2 : 1]);
+          for (const [side, deep, most] of sides) {
+            check(deep >= 2, `${where}: the focus ring on ${name} changes its ${side} side by ${most.toFixed(2)}:1 at most, needs 3:1 over 2px`);
+          }
+        }
+      }
+      await ctx.close();
+    }
+    await decoder.close();
   }
 
   // The share card: one compartment per tile in page order, each 40px or more so its object can be made out, and all of

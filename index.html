@@ -166,7 +166,8 @@
     }
     a.slot:hover { background: var(--slot-hover); }
     a.slot:hover .obj { transform: translateY(-3px) rotate(-4deg); }
-    a.slot:focus-visible { outline: 3px solid var(--tone, var(--accent)); outline-offset: 3px; }
+    /* The focus ring goes just inside the tile's edge: out on the wood, in the light palette, it barely shows. */
+    a.slot:focus-visible { outline: 3px solid var(--tone, var(--accent)); outline-offset: -4px; }
     .obj { font-size: 2.5rem; line-height: 1; display: inline-block; transition: transform .2s; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .18)); }
     .slot h3 { font-size: 1.2rem; margin: .45rem 0 0; letter-spacing: -.01em; }
     .slot p { margin: 0; color: var(--muted); font-size: .95rem; }
